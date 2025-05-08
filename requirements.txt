@@ -1,0 +1,2 @@
+# No server-side dependencies for this version
+# Future versions may include backend requirements
