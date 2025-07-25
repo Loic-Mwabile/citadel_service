@@ -146,9 +146,39 @@ body {
     font-weight: bold;
 }
 
+/* Mode Toggle Styles */
+.mode-toggle {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    gap: 5px;
+    background-color: var(--secondary-color);
+    padding: 5px;
+    border-radius: 8px;
+}
+
+.mode-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    background: none;
+    color: var(--text-color);
+    font-size: 0.9rem;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.mode-btn.active {
+    background-color: var(--accent-color);
+    color: var(--dark-bg);
+    font-weight: bold;
+}
+
 /* Input Styles */
 .input-group {
     margin-bottom: 1.5rem;
+    position: relative;
 }
 
 .input-wrapper {
@@ -157,12 +187,15 @@ body {
     border: 2px solid var(--secondary-color);
     border-radius: 8px;
     overflow: hidden;
+    margin-bottom: 0.5rem;
 }
 
-.input-wrapper i {
-    padding: 10px;
+.currency-symbol {
+    padding: 10px 12px;
     background-color: var(--light-bg);
-    color: var(--secondary-color);
+    color: var(--accent-color);
+    font-weight: bold;
+    font-size: 1rem;
 }
 
 .input-wrapper input {
@@ -170,6 +203,46 @@ body {
     border: none;
     padding: 10px;
     font-size: 1rem;
+    background-color: var(--light-bg);
+    color: var(--white);
+}
+
+/* Tooltip Styles */
+.fee-tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+    color: var(--accent-color);
+    font-size: 0.9rem;
+}
+
+.fee-tooltip .tooltip-text {
+    visibility: hidden;
+    width: 250px;
+    background-color: var(--dark-bg);
+    color: var(--white);
+    text-align: center;
+    border-radius: 6px;
+    padding: 10px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 0.8rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.fee-tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+.fee-tooltip i {
+    font-size: 1rem;
+    vertical-align: middle;
 }
 
 /* Results Styles */
