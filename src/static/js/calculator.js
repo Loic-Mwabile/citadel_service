@@ -9,89 +9,172 @@ const FEE_TIERS = [
 
 // DOM Elements
 const transferForm = document.getElementById('transferForm');
-const transferAmountInput = document.getElementById('transferAmount');
+const inrToUsdBtn = document.getElementById('inrToUsdBtn');
+const usdToInrBtn = document.getElementById('usdToInrBtn');
+const inrInputGroup = document.getElementById('inrInputGroup');
+const usdInputGroup = document.getElementById('usdInputGroup');
+const inrAmountInput = document.getElementById('inrAmount');
+const usdAmountInput = document.getElementById('usdAmountInput');
+
+// Result elements
 const feePercentageSpan = document.getElementById('feePercentage');
 const feeAmountSpan = document.getElementById('feeAmount');
 const totalAmountSpan = document.getElementById('totalAmount');
-const usdAmountSpan = document.getElementById('usdAmount');
+const equivalentAmountSpan = document.getElementById('equivalentAmount');
+const totalLabel = document.getElementById('totalLabel');
+const equivalentLabel = document.getElementById('equivalentLabel');
 
-// Validate Input
-function validateInput(amount) {
-    if (isNaN(amount) || amount <= 0) {
-        throw new Error('Please enter a valid transfer amount.');
+// State
+let isInrToUsd = true;
+
+// Initialize the calculator
+function initCalculator() {
+    // Set up event listeners
+    inrToUsdBtn.addEventListener('click', () => switchMode(true));
+    usdToInrBtn.addEventListener('click', () => switchMode(false));
+    inrAmountInput.addEventListener('input', () => handleInput('inr'));
+    usdAmountInput.addEventListener('input', () => handleInput('usd'));
+    
+    // Set initial state
+    switchMode(true);
+    
+    // Trigger initial calculation if there's a value
+    if (inrAmountInput.value) {
+        handleInput('inr');
     }
 }
 
-// Calculate Transfer Fee
-function calculateTransferFee(amount) {
-    // Ensure input is a number and round to 2 decimal places
-    amount = Number(Number(amount).toFixed(2));
-
-    // Validate input
-    validateInput(amount);
-
-    // Find the appropriate fee tier
-    const tier = FEE_TIERS.find(t => amount >= t.min && amount <= t.max);
-
-    if (!tier) {
-        throw new Error('Unable to determine fee tier.');
+// Switch between INR to USD and USD to INR modes
+function switchMode(toInrToUsd) {
+    isInrToUsd = toInrToUsd;
+    
+    // Update active state of toggle buttons
+    inrToUsdBtn.classList.toggle('active', isInrToUsd);
+    usdToInrBtn.classList.toggle('active', !isInrToUsd);
+    
+    // Show/hide input groups
+    inrInputGroup.style.display = isInrToUsd ? 'block' : 'none';
+    usdInputGroup.style.display = isInrToUsd ? 'none' : 'block';
+    
+    // Update labels
+    if (isInrToUsd) {
+        totalLabel.textContent = 'Total to Pay';
+        equivalentLabel.textContent = 'Will Receive';
+        // Focus on the active input
+        inrAmountInput.focus();
+    } else {
+        totalLabel.textContent = 'Total to Pay (INR)';
+        equivalentLabel.textContent = 'Amount to Send (USD)';
+        // Focus on the active input
+        usdAmountInput.focus();
     }
+    
+    // Recalculate based on current input
+    const activeInput = isInrToUsd ? inrAmountInput : usdAmountInput;
+    if (activeInput.value) {
+        handleInput(isInrToUsd ? 'inr' : 'usd');
+    } else {
+        resetResults();
+    }
+}
 
-    // Calculate fee and total amount with precise rounding
-    const feeAmount = Number((amount * tier.rate).toFixed(2));
-    const totalAmount = Number((amount + feeAmount).toFixed(2));
-    const usdAmount = Number((amount / EXCHANGE_RATE).toFixed(2));
+// Handle input changes
+function handleInput(inputType) {
+    const input = inputType === 'inr' ? inrAmountInput : usdAmountInput;
+    const value = parseFloat(input.value);
+    
+    if (isNaN(value) || value <= 0) {
+        resetResults();
+        return;
+    }
+    
+    if (inputType === 'inr') {
+        calculateInrToUsd(value);
+    } else {
+        calculateUsdToInr(value);
+    }
+}
 
-    return {
-        feeRate: (tier.rate * 100).toFixed(1),
-        feeAmount: feeAmount.toFixed(2),
-        totalAmount: totalAmount.toFixed(2),
-        usdAmount: usdAmount.toFixed(2)
+// Calculate from INR to USD
+function calculateInrToUsd(inrAmount) {
+    const tier = FEE_TIERS.find(t => inrAmount >= t.min && inrAmount <= t.max) || FEE_TIERS[FEE_TIERS.length - 1];
+    const feeAmount = inrAmount * tier.rate;
+    const totalInr = inrAmount + feeAmount;
+    const usdAmount = inrAmount / EXCHANGE_RATE;
+    
+    updateResults({
+        feeRate: tier.rate * 100,
+        feeAmount,
+        totalAmount: totalInr,
+        equivalentAmount: usdAmount,
+        currency: 'USD',
+        showInrTotal: false
+    });
+    
+    // Update USD input field without triggering event
+    usdAmountInput.removeEventListener('input', handleUsdInput);
+    usdAmountInput.value = usdAmount.toFixed(2);
+    usdAmountInput.addEventListener('input', handleUsdInput);
+}
+
+// Calculate from USD to INR
+function calculateUsdToInr(usdAmount) {
+    const inrAmount = usdAmount * EXCHANGE_RATE;
+    const tier = FEE_TIERS.find(t => inrAmount >= t.min && inrAmount <= t.max) || FEE_TIERS[FEE_TIERS.length - 1];
+    const feeAmount = inrAmount * tier.rate;
+    const totalInr = inrAmount + feeAmount;
+    
+    updateResults({
+        feeRate: tier.rate * 100,
+        feeAmount,
+        totalAmount: totalInr,
+        equivalentAmount: inrAmount,
+        currency: 'INR',
+        showInrTotal: true
+    });
+    
+    // Update INR input field without triggering event
+    inrAmountInput.removeEventListener('input', handleInrInput);
+    inrAmountInput.value = inrAmount.toFixed(2);
+    inrAmountInput.addEventListener('input', handleInrInput);
+}
+
+// Update the UI with calculation results
+function updateResults({ feeRate, feeAmount, totalAmount, equivalentAmount }) {
+    // Format numbers with proper currency symbols and decimal places
+    const formatCurrency = (amount, isInr = true) => {
+        return isInr 
+            ? `₹${amount.toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`
+            : `$${amount.toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`;
     };
+    
+    // Update fee display
+    feePercentageSpan.textContent = `${feeRate.toFixed(1)}%`;
+    feeAmountSpan.textContent = formatCurrency(feeAmount);
+    
+    // Update total and equivalent amounts based on mode
+    if (isInrToUsd) {
+        // In INR to USD mode, show total in INR and equivalent in USD
+        totalAmountSpan.textContent = formatCurrency(totalAmount);
+        equivalentAmountSpan.textContent = formatCurrency(equivalentAmount, false);
+    } else {
+        // In USD to INR mode, show total in INR and the original USD amount
+        totalAmountSpan.textContent = formatCurrency(totalAmount);
+        equivalentAmountSpan.textContent = formatCurrency(equivalentAmount);
+    }
 }
 
-// Update UI with calculation results
-function updateResultsUI(results) {
-    feePercentageSpan.textContent = `${results.feeRate}%`;
-    feeAmountSpan.textContent = `₹${results.feeAmount}`;
-    totalAmountSpan.textContent = `₹${results.totalAmount}`;
-    usdAmountSpan.textContent = `$${results.usdAmount}`;
-}
-
-// Reset results to default state
+// Reset all results to default state
 function resetResults() {
     feePercentageSpan.textContent = '-';
     feeAmountSpan.textContent = '-';
     totalAmountSpan.textContent = '-';
-    usdAmountSpan.textContent = '-';
+    equivalentAmountSpan.textContent = '-';
 }
 
-// Form submission event listener
-transferForm.addEventListener('submit', function(e) {
-    // Prevent the default form submission
-    e.preventDefault();
-    e.stopPropagation();
-    
-    // Get transfer amount
-    const transferAmount = parseFloat(transferAmountInput.value);
-    
-    // Validate input
-    if (isNaN(transferAmount) || transferAmount <= 0) {
-        alert('Please enter a valid transfer amount.');
-        resetResults();
-        return false;
-    }
-    
-    try {
-        // Calculate and update results
-        const results = calculateTransferFee(transferAmount);
-        updateResultsUI(results);
-    } catch (error) {
-        // Handle any unexpected errors
-        alert(error.message);
-        resetResults();
-    }
-    
-    // Prevent form submission
-    return false;
-}, false);
+// Wrapper functions for event listeners to handle proper scoping
+function handleInrInput() { handleInput('inr'); }
+function handleUsdInput() { handleInput('usd'); }
+
+// Initialize the calculator when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', initCalculator);

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citadel Service - India to DRC Money Transfer</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4a90e2">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="src/static/css/styles.css">
+    <meta name="description" content="Money transfer cost calculator for India to DRC transfers">
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="src/assets/logo.png" alt="Citadel Service Logo" class="main-logo">
+            <h1 class="site-title">Citadel Service</h1>
+        </div>
+    </header>
+    <main>
+        <section class="slideshow-container" aria-label="Image Slideshow">
+            <div class="slide fade" role="img" aria-label="Slide 1"></div>
+            <div class="slide fade" role="img" aria-label="Slide 2"></div>
+            <div class="slide fade" role="img" aria-label="Slide 3"></div>
+            <button class="prev" onclick="changeSlide(-1)" aria-label="Previous Slide">&#10094;</button>
+            <button class="next" onclick="changeSlide(1)" aria-label="Next Slide">&#10095;</button>
+        </section>
+
+    <div class="transfer-container">
+        <h1>Money Transfer</h1>
+        <div class="exchange-rate">
+            <p>1 USD = ₹83.5 <i class="fas fa-info-circle" title="Fixed exchange rate"></i></p>
+        </div>
+        
+        <!-- Toggle Switch -->
+        <div class="transfer-toggle">
+            <button id="inrToUsdBtn" class="toggle-btn active" type="button">
+                <i class="fas fa-rupee-sign"></i> I have INR
+            </button>
+            <button id="usdToInrBtn" class="toggle-btn" type="button">
+                <i class="fas fa-dollar-sign"></i> I want to send USD
+            </button>
+        </div>
+
+        <!-- Transfer Form -->
+        <form id="transferForm">
+            <!-- INR to USD Input -->
+            <div id="inrInputGroup" class="input-group">
+                <label for="inrAmount">Amount to Send</label>
+                <div class="input-wrapper">
+                    <span class="currency-symbol">₹</span>
+                    <input type="number" id="inrAmount" min="0" step="1" placeholder="0" inputmode="decimal">
+                </div>
+            </div>
+
+            <!-- USD to INR Input (initially hidden) -->
+            <div id="usdInputGroup" class="input-group" style="display: none;">
+                <label for="usdAmount">Amount to Send</label>
+                <div class="input-wrapper">
+                    <span class="currency-symbol">$</span>
+                    <input type="number" id="usdAmountInput" min="0" step="0.01" placeholder="0.00" inputmode="decimal">
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="results-box">
+                <div class="result-item">
+                    <div class="result-label">
+                        <span>Exchange Rate</span>
+                        <i class="fas fa-info-circle" title="Current exchange rate"></i>
+                    </div>
+                    <span id="exchangeRateDisplay">1 USD = ₹83.5</span>
+                </div>
+                
+                <div class="result-item">
+                    <div class="result-label">
+                        <span>Transfer Fee</span>
+                        <i class="fas fa-info-circle fee-tooltip" title="Tiered fee structure: 0-8,350₹ (3%), 8,351-12,500₹ (4%), 12,501-16,700₹ (4.5%), 16,701+₹ (5%)"></i>
+                    </div>
+                    <div>
+                        <span id="feePercentage">-</span> (<span id="feeAmount">-</span>)
+                    </div>
+                </div>
+                
+                <div class="result-item total">
+                    <div class="result-label">
+                        <span id="totalLabel">Total to Pay</span>
+                        <i class="fas fa-info-circle" title="Amount to pay including all fees"></i>
+                    </div>
+                    <span id="totalAmount" class="total-amount">-</span>
+                </div>
+                
+                <div class="result-item">
+                    <div class="result-label">
+                        <span id="equivalentLabel">Will Receive</span>
+                        <i class="fas fa-info-circle" title="Amount recipient will get after all fees"></i>
+                    </div>
+                    <span id="equivalentAmount" class="highlight">-</span>
+                </div>
+            </div>
+        </form>
+    </div>
+        <div class="contact-info">
+            <p>Contact Us:</p>
+            <p><i class="fab fa-whatsapp"></i> WhatsApp: +919888779812</p>
+            <p><i class="fas fa-envelope"></i> Email: <a href="mailto:citadel0service@gmail.com">citadel0service@gmail.com</a></p>
+        </div>
+    </main>
+    <script src="src/static/js/calculator.js"></script>
+    <script src="src/static/js/slideshow.js"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        // Check if service workers are supported
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                        // Optional: Check for updates
+                        registration.update().then(() => {
+                            console.log('ServiceWorker update check completed');
+                        });
+                    })
+                    .catch(error => {
+                        console.log('ServiceWorker registration failed: ', error);
+                    });
+            });
+
+            // Listen for controller changes (when a new service worker takes over)
+            let refreshing = false;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (!refreshing) {
+                    window.location.reload();
+                    refreshing = true;
+                }
+            });
+        }
+
+        // Function to check online/offline status
+        function updateOnlineStatus() {
+            if (!navigator.onLine) {
+                // Show offline UI if needed
+                console.log('You are offline');
+            }
+        }
+
+        // Add event listeners for online/offline status
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+        updateOnlineStatus(); // Check initial status
+    </script>
+</body>
+</html>

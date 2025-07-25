@@ -49,6 +49,258 @@ body {
     object-fit: cover;
 }
 
+/* Money Transfer Component */
+.transfer-container {
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    color: #333;
+}
+
+.transfer-container h1 {
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+}
+
+/* Toggle Switch */
+.transfer-toggle {
+    display: flex;
+    background: #f5f7fa;
+    border-radius: 12px;
+    padding: 4px;
+    margin: 1.5rem 0;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.toggle-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.toggle-btn i {
+    font-size: 1rem;
+}
+
+.toggle-btn.active {
+    background: #ffffff;
+    color: #4f46e5;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Input Groups */
+.input-group {
+    margin-bottom: 1.5rem;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #4b5563;
+    font-size: 0.95rem;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+.input-wrapper:focus-within {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.currency-symbol {
+    padding: 0 16px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #4b5563;
+    background: #f3f4f6;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.input-wrapper input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 14px 16px;
+    font-size: 1.2rem;
+    color: #111827;
+    outline: none;
+    font-weight: 500;
+}
+
+.input-wrapper input::placeholder {
+    color: #9ca3af;
+    font-weight: normal;
+}
+
+/* Results Box */
+.results-box {
+    background: #f9fafb;
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-top: 1.5rem;
+}
+
+.result-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.result-item:last-child {
+    border-bottom: none;
+}
+
+.result-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #4b5563;
+    font-size: 0.95rem;
+}
+
+.result-label i {
+    color: #9ca3af;
+    cursor: help;
+    font-size: 0.9rem;
+}
+
+.result-item.total {
+    padding: 1rem 0;
+    margin: 0.5rem 0;
+    border-top: 2px solid #e5e7eb;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.total-amount {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.highlight {
+    font-weight: 700;
+    color: #10b981;
+    font-size: 1.2rem;
+}
+
+/* Tooltips */
+[title] {
+    position: relative;
+    cursor: help;
+}
+
+[title]:hover::after,
+[title]:focus::after {
+    content: attr(title);
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    transform: translateX(-50%);
+    margin-bottom: 8px;
+    padding: 8px 12px;
+    background: #333;
+    color: #fff;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: normal;
+    white-space: nowrap;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    width: max-content;
+    max-width: 250px;
+}
+
+[title]:hover::after,
+[title]:focus::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-4px);
+}
+
+/* Add a small arrow to the tooltip */
+[title]:hover::before,
+[title]:focus::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    margin-bottom: 0;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #333;
+    z-index: 1001;
+    opacity: 0;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+[title]:hover::before,
+[title]:focus::before {
+    opacity: 1;
+    transform: translateX(-50%) translateY(4px);
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+    .transfer-container {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+    
+    .toggle-btn {
+        font-size: 0.85rem;
+        padding: 10px 8px;
+    }
+    
+    .input-wrapper input {
+        font-size: 1.1rem;
+        padding: 12px 14px;
+    }
+    
+    .results-box {
+        padding: 1rem;
+    }
+    
+    .result-label, .result-item span {
+        font-size: 0.9rem;
+    }
+    
+    .total-amount {
+        font-size: 1.3rem;
+    }
+}
+
 .site-title {
     color: var(--white);
     font-size: 1.8rem;
@@ -59,24 +311,33 @@ body {
 .slideshow-container {
     position: relative;
     width: 100%;
-    height: 70vh;
-    min-height: 400px;
-    max-height: 800px;
+    max-width: 1200px; /* Max width for very large screens */
+    height: 0;
+    padding-bottom: 40%; /* 5:2 aspect ratio (adjust as needed) */
+    margin: 0 auto;
     overflow: hidden;
-    background-color: rgba(0,0,0,0.7);
+    background-color: var(--dark-bg);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
 .slide {
     display: none;
     position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    background-color: rgba(0,0,0,0.5);
-    filter: brightness(0.8);
-    transition: filter 0.3s ease;
+    background-color: var(--dark-bg);
+    transition: opacity 0.5s ease-in-out;
+    opacity: 0;
+}
+
+.slide.active {
+    display: block;
+    opacity: 1;
 }
 
 .slide:hover {
