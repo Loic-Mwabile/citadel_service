@@ -227,20 +227,22 @@ body {
     bottom: 100%;
     transform: translateX(-50%);
     margin-bottom: 8px;
-    padding: 8px 12px;
+    padding: 10px 14px;
     background: #333;
     color: #fff;
-    border-radius: 6px;
-    font-size: 0.85rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
     font-weight: normal;
-    white-space: nowrap;
+    white-space: normal;
     z-index: 1000;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     pointer-events: none;
     opacity: 0;
-    transition: opacity 0.2s ease, transform 0.2s ease;
-    width: max-content;
-    max-width: 250px;
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+    width: 280px;
+    text-align: center;
+    line-height: 1.4;
+    font-weight: 400;
 }
 
 [title]:hover::after,
@@ -262,7 +264,7 @@ body {
     border-top-color: #333;
     z-index: 1001;
     opacity: 0;
-    transition: opacity 0.2s ease, transform 0.2s ease;
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
 }
 
 [title]:hover::before,
@@ -272,15 +274,17 @@ body {
 }
 
 /* Responsive Design */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
     .transfer-container {
         margin: 1rem;
-        padding: 1.5rem;
+        padding: 1.25rem;
+        border-radius: 12px;
     }
     
     .toggle-btn {
         font-size: 0.85rem;
-        padding: 10px 8px;
+        padding: 10px 6px;
+        white-space: nowrap;
     }
     
     .input-wrapper input {
@@ -290,6 +294,7 @@ body {
     
     .results-box {
         padding: 1rem;
+        border-radius: 10px;
     }
     
     .result-label, .result-item span {
@@ -298,6 +303,33 @@ body {
     
     .total-amount {
         font-size: 1.3rem;
+    }
+    
+    /* Improved tooltips for mobile */
+    [title]:hover::after,
+    [title]:focus::after {
+        left: 50%;
+        transform: translateX(-50%);
+        width: 240px;
+        font-size: 0.85rem;
+        padding: 10px 12px;
+        white-space: normal;
+        word-wrap: break-word;
+    }
+    
+    /* Ensure tooltips are visible on touch devices */
+    @media (hover: none) {
+        [title] {
+            position: relative;
+            display: inline-block;
+        }
+        
+        [title]:focus::after,
+        [title]:focus::before {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
     }
 }
 

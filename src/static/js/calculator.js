@@ -1,11 +1,6 @@
 // Constants
-const EXCHANGE_RATE = 83.5; // ₹83.5 = $1
-const FEE_TIERS = [
-    { min: 0, max: 8350, rate: 0.03 },
-    { min: 8351, max: 12500, rate: 0.04 },
-    { min: 12501, max: 16700, rate: 0.045 },
-    { min: 16701, max: Infinity, rate: 0.05 }
-];
+const EXCHANGE_RATE = 85; // ₹85 = $1
+const FEE_RATE = 0.05; // Flat 5% fee for all amounts
 
 // DOM Elements
 const transferForm = document.getElementById('transferForm');
@@ -64,7 +59,7 @@ function switchMode(toInrToUsd) {
         inrAmountInput.focus();
     } else {
         totalLabel.textContent = 'Total to Pay (INR)';
-        equivalentLabel.textContent = 'Amount to Send (USD)';
+        equivalentLabel.textContent = 'Amount to Send (INR)';
         // Focus on the active input
         usdAmountInput.focus();
     }
@@ -97,18 +92,17 @@ function handleInput(inputType) {
 
 // Calculate from INR to USD
 function calculateInrToUsd(inrAmount) {
-    const tier = FEE_TIERS.find(t => inrAmount >= t.min && inrAmount <= t.max) || FEE_TIERS[FEE_TIERS.length - 1];
-    const feeAmount = inrAmount * tier.rate;
+    // Calculate fee and total amount
+    const feeAmount = inrAmount * FEE_RATE;
     const totalInr = inrAmount + feeAmount;
     const usdAmount = inrAmount / EXCHANGE_RATE;
     
+    // Update the UI with results
     updateResults({
-        feeRate: tier.rate * 100,
+        feeRate: FEE_RATE * 100,
         feeAmount,
         totalAmount: totalInr,
-        equivalentAmount: usdAmount,
-        currency: 'USD',
-        showInrTotal: false
+        equivalentAmount: usdAmount
     });
     
     // Update USD input field without triggering event
@@ -119,23 +113,24 @@ function calculateInrToUsd(inrAmount) {
 
 // Calculate from USD to INR
 function calculateUsdToInr(usdAmount) {
+    // Convert USD to INR first
     const inrAmount = usdAmount * EXCHANGE_RATE;
-    const tier = FEE_TIERS.find(t => inrAmount >= t.min && inrAmount <= t.max) || FEE_TIERS[FEE_TIERS.length - 1];
-    const feeAmount = inrAmount * tier.rate;
+    
+    // Calculate fee and total amount
+    const feeAmount = inrAmount * FEE_RATE;
     const totalInr = inrAmount + feeAmount;
     
+    // Update the UI with results
     updateResults({
-        feeRate: tier.rate * 100,
+        feeRate: FEE_RATE * 100,
         feeAmount,
         totalAmount: totalInr,
-        equivalentAmount: inrAmount,
-        currency: 'INR',
-        showInrTotal: true
+        equivalentAmount: inrAmount
     });
     
     // Update INR input field without triggering event
     inrAmountInput.removeEventListener('input', handleInrInput);
-    inrAmountInput.value = inrAmount.toFixed(2);
+    inrAmountInput.value = Math.round(inrAmount);
     inrAmountInput.addEventListener('input', handleInrInput);
 }
 
